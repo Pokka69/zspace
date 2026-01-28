@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<title>file</title>
+
+<style>
+body {
+  margin: 0;
+  background: #000;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* HEADER */
+.header {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  background: #111;
+  border-bottom: 1px solid #222;
+}
+.back {
+  font-size: 20px;
+  margin-right: 12px;
+  cursor: pointer;
+}
+.title {
+  flex: 1;
+}
+.reset {
+  font-size: 13px;
+  color: #aaa;
+  cursor: pointer;
+}
+
+/* CHAT */
+.chat {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+}
+
+.msg {
+  max-width: 85%;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  border-radius: 12px;
+  background: #1e1e1e;
+}
+
+/* STATUS TEXT (LOG) */
+.status {
+  font-size: 13px;
+  color: #aaa;
+  margin: 6px 0 0 6px;
+  font-style: italic;
+}
+
+/* FILE LIST */
+.file {
+  background: #111;
+  border: 1px solid #222;
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+.file.active {
+  background: #2f80ed;
+  border-color: #2f80ed;
+}
+.file small {
+  color: #aaa;
+}
+.file.active small {
+  color: #e6e6e6;
+}
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="back" onclick="goBack()">←</div>
+  <div class="title">file</div>
+  <div class="reset" onclick="resetAll()">Reset</div>
+</div>
+
+<!-- CHAT -->
+<div class="chat" id="chat"></div>
+
+<script>
+const chat = document.getElementById("chat");
+
+/* BOT MESSAGE */
+function bot(text) {
+  const d = document.createElement("div");
+  d.className = "msg";
+  d.innerText = text;
+  chat.appendChild(d);
+}
+
+/* STATUS LOG (TAK PADAM YANG LAMA) */
+function status(text) {
+  const s = document.createElement("div");
+  s.className = "status";
+  s.innerText = `*${text}*`;
+  chat.appendChild(s);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+/* FILE ITEM */
+function fileItem(name, desc, link) {
+  const d = document.createElement("div");
+  d.className = "file";
+  d.innerHTML = `<b> ${V.G.K}</b><br><small>${desc}</small>`;
+  d.onclick = () => openFile(d, name, link);
+  chat.appendChild(d);
+}
+
+function openFile(el, name, link) {
+  el.classList.add("active");
+  status(`${name} dibuka`);
+  window.open(link, "_blank"); // buka link luar
+}
+
+/* RESET */
+function resetAll() {
+  document.querySelectorAll(".file").forEach(f => f.classList.remove("active"));
+  document.querySelectorAll(".status").forEach(s => s.remove());
+  bot("Semua pilihan telah direset.");
+}
+
+function goBack() {
+  window.location.href = "index.html";
+}
+
+/* INIT */
+bot("Pilih fail di bawah. Setiap fail akan membuka pautan luar.");
+
+fileItem("File A", "Maklumat asas", "https://www.google.com");
+fileItem("File B", "Dokumen rahsia", "https://www.youtube.com");
+fileItem("File C", "Akses khas", "https://example.com");
+</script>
+
+</body>
+</html>
