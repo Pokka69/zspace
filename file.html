@@ -1,70 +1,109 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>File List</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Senarai Fail Ka</title>
+    <style>
+        /* Gaya Latar Belakang & Font */
+        body { background-color: #000000; color: white; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; padding: 20px; margin: 0; }
+        
+        /* Header */
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; margin-bottom: 25px; }
+        .back-link { color: #448aff; text-decoration: none; font-size: 16px; }
+        .title { font-size: 18px; font-weight: bold; flex-grow: 1; text-align: center; margin-right: 40px; }
+        .btn-reset { background-color: #333; color: #ccc; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; }
 
-<style>
-* { box-sizing: border-box; }
+        /* Container Kotak */
+        .container { display: flex; flex-direction: column; gap: 12px; }
+        
+        /* Gaya Kotak Fail (Macam dalam gambar) */
+        .item-box {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 20px; border-radius: 15px; background-color: #1c1c1e;
+            transition: 0.3s ease; border: 1px solid transparent;
+        }
 
-body {
-  margin: 0;
-  background: #000;
-  color: #fff;
-  font-family: system-ui;
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-}
+        /* Warna Biru bila dah klik */
+        .item-box.played { background-color: #1a237e; border: 1px solid #303f9f; }
 
-/* Header */
-.header {
-  padding: 14px;
-  background: #0f0f0f;
-  border-bottom: 1px solid #222;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+        /* Ikon & Teks */
+        .content-left { display: flex; align-items: center; gap: 15px; }
+        .icon-file { font-size: 20px; opacity: 0.8; }
+        .text-title { font-weight: 500; font-size: 16px; }
+        .info-blue { color: #00bcd4; font-size: 13px; margin-left: 10px; }
 
-.header button {
-  background: none;
-  border: none;
-  color: #2f80ed;
-  font-size: 16px;
-}
-
-/* Content */
-.content {
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px;
-}
-
-/* File list */
-.file {
-  padding: 14px;
-  background: #1c1c1c;
-  border-radius: 14px;
-  margin-bottom: 12px;
-}
-</style>
+        /* Butang Buka Merah */
+        .btn-buka { background-color: #f44336; color: white; border: none; padding: 10px 22px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 14px; }
+        .btn-buka:hover { background-color: #d32f2f; }
+    </style>
 </head>
-
 <body>
 
 <div class="header">
-  <button onclick="history.back()">← Kembali</button>
-  <div>Senarai Fail</div>
+    <a href="#" class="back-link">← Kembali</a>
+    <span class="title">Senarai Fail</span>
+    <button class="btn-reset" onclick="resetWarna()">RESET</button>
 </div>
 
-<div class="content">
-  <div class="file">📄 File 1</div>
-  <div class="file">📄 File 2</div>
-  <div class="file">📄 File 3</div>
-  <div class="file">📄 File 4</div>
-</div>
+<div class="container" id="fileList">
+    </div>
+
+<script>
+    // ========================================================
+    // ⬇️ BAHAGIAN UNTUK KA TAMBAH KOTAK SECARA MANUAL ⬇️
+    // ========================================================
+    const senaraiData = [
+        { id: 1, nama: "File 1", link: "https://google.com" },
+        { id: 2, nama: "File 2", link: "https://youtube.com" },
+        { id: 3, nama: "File 3", link: "https://tiktok.com" },
+        { id: 4, nama: "File 4", link: "https://facebook.com" },
+        // Untuk tambah baru, copy baris di bawah dan paste kat sini:
+        // { id: 5, nama: "File 5", link: "URL_LINK_KA" },
+    ];
+    // ========================================================
+
+    let statusKlik = JSON.parse(localStorage.getItem('dataBiruKa')) || {};
+
+    function render() {
+        const list = document.getElementById('fileList');
+        list.innerHTML = '';
+
+        senaraiData.forEach((item) => {
+            const isBlue = statusKlik[item.id] ? 'played' : '';
+            const div = document.createElement('div');
+            div.className = `item-box ${isBlue}`;
+            div.innerHTML = `
+                <div class="content-left">
+                    <span class="icon-file">📄</span>
+                    <div>
+                        <span class="text-title">#${item.id} &nbsp; ${item.nama}</span>
+                        <span class="info-blue">info | info | info</span>
+                    </div>
+                </div>
+                <button class="btn-buka" onclick="bukaLink(${item.id}, '${item.link}')">BUKA</button>
+            `;
+            list.appendChild(div);
+        });
+    }
+
+    function bukaLink(id, url) {
+        statusKlik[id] = true;
+        localStorage.setItem('dataBiruKa', JSON.stringify(statusKlik));
+        render();
+        window.open(url, '_blank');
+    }
+
+    function resetWarna() {
+        if(confirm("Confirm nak reset semua jadi kelabu balik?")) {
+            statusKlik = {};
+            localStorage.removeItem('dataBiruKa');
+            render();
+        }
+    }
+
+    render();
+</script>
 
 </body>
 </html>
