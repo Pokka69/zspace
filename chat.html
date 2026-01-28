@@ -20,6 +20,7 @@ body {
   flex-direction: column;
 }
 
+/* Chat area */
 .chat {
   flex: 1;
   padding: 16px;
@@ -29,6 +30,7 @@ body {
   gap: 10px;
 }
 
+/* Message bubble */
 .msg {
   max-width: 75%;
   padding: 12px 16px;
@@ -47,6 +49,7 @@ body {
   align-self: flex-end;
 }
 
+/* Input box */
 .input-box {
   position: sticky;
   bottom: 0;
@@ -62,7 +65,7 @@ input {
   padding: 14px;
   background: #1e1e1e;
   border: none;
-  color: white;
+  color: #fff;
   border-radius: 999px;
   outline: none;
   font-size: 16px;
@@ -73,7 +76,7 @@ input {
 button {
   background: #2f80ed;
   border: none;
-  color: white;
+  color: #fff;
   padding: 0 18px;
   border-radius: 999px;
   font-size: 18px;
@@ -99,11 +102,20 @@ button {
 </div>
 
 <script>
-// HASH MD5 → PAGE
+// ===================================
+// OPTIONAL: GATE CHECK (BUANG JIKA TAK GUNA)
+// ===================================
+if (localStorage.getItem("permanent_access") !== "yes") {
+  location.replace("index.html");
+}
+
+// ===================================
+// 4 DIGIT CODE → PAGE
+// ===================================
 const accessMap = {
-  "81dc9bdb52d04dc20036dbd8313ed055": "file.html",   // 1234
-  "674f3c2c1a8a6f90461e8a66fb5550ba": "page-b.html", // 5678
-  "fa246d0262c3925617b0c72bb20eeb1d": "admin.html"  // 9999
+  "1234": "file.html",
+  "5678": "page-b.html",
+  "9999": "admin.html"
 };
 
 const chat = document.getElementById("chat");
@@ -116,9 +128,10 @@ function addMsg(text, cls) {
   chat.scrollTop = chat.scrollHeight;
 }
 
+// Initial bot message
 addMsg("Masukkan code akses 4 digit.", "bot");
 
-async function send() {
+function send() {
   const input = document.getElementById("code");
   const value = input.value.trim();
 
@@ -127,27 +140,14 @@ async function send() {
   addMsg("••••", "user");
   input.value = "";
 
-  const hash = await md5(value);
-
-  if (accessMap[hash]) {
+  if (accessMap[value]) {
     addMsg("✅ Akses diterima. Mengalihkan…", "bot");
     setTimeout(() => {
-      location.href = accessMap[hash];
-    }, 1200);
+      location.href = accessMap[value];
+    }, 1000);
   } else {
     addMsg("❌ Code tidak sah.", "bot");
   }
-}
-
-// MD5 (fallback selamat)
-async function md5(str) {
-  if (crypto?.subtle) {
-    const buf = await crypto.subtle.digest("MD5", new TextEncoder().encode(str));
-    return [...new Uint8Array(buf)]
-      .map(b => b.toString(16).padStart(2, "0"))
-      .join("");
-  }
-  return CryptoJS.MD5(str).toString();
 }
 </script>
 
