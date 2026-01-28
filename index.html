@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<title>Chat Access</title>
+
+<style>
+body {
+  margin: 0;
+  background: #000;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+.chat {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+}
+.msg {
+  max-width: 80%;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  border-radius: 12px;
+}
+.bot { background: #1e1e1e; }
+.user {
+  background: #2f80ed;
+  margin-left: auto;
+}
+.input-box {
+  display: flex;
+  padding: 10px;
+  background: #111;
+}
+input {
+  flex: 1;
+  padding: 12px;
+  background: #222;
+  border: none;
+  color: white;
+  border-radius: 20px;
+  outline: none;
+}
+button {
+  margin-left: 10px;
+  background: #2f80ed;
+  border: none;
+  color: white;
+  padding: 0 20px;
+  border-radius: 20px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="chat" id="chat"></div>
+
+<div class="input-box">
+  <input type="password" id="code" maxlength="4" placeholder="Taip 4 digit code">
+  <button onclick="send()">➤</button>
+</div>
+
+<script>
+// SENARAI CODE → PAGE (HASH)
+const accessMap = {
+  "81dc9bdb52d04dc20036dbd8313ed055": "page-a.html", // 1234
+  "674f3c2c1a8a6f90461e8a66fb5550ba": "page-b.html", // 5678
+  "fa246d0262c3925617b0c72bb20eeb1d": "admin.html"  // 9999
+};
+
+const chat = document.getElementById("chat");
+
+function addMsg(text, cls) {
+  const div = document.createElement("div");
+  div.className = "msg " + cls;
+  div.innerText = text;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+addMsg("Masukkan code akses.", "bot");
+
+async function send() {
+  const input = document.getElementById("code");
+  const value = input.value;
+  if (value.length !== 4) return;
+
+  addMsg(value, "user");
+  input.value = "";
+
+  const hash = await md5(value);
+
+  if (accessMap[hash]) {
+    addMsg("✅ Akses diterima. Mengalihkan...", "bot");
+    setTimeout(() => {
+      window.location.href = accessMap[hash];
+    }, 1500);
+  } else {
+    addMsg("❌ Code tidak sah.", "bot");
+  }
+}
+
+function md5(str) {
+  return crypto.subtle.digest("MD5", new TextEncoder().encode(str))
+    .then(buf =>
+      Array.from(new Uint8Array(buf))
+        .map(b => b.toString(16).padStart(2, "0"))
+        .join("")
+    );
+}
+</script>
+
+</body>
+</html>
