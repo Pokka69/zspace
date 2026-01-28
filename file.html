@@ -2,151 +2,69 @@
 <html lang="ms">
 <head>
 <meta charset="UTF-8">
-<title>file</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>File List</title>
 
 <style>
+* { box-sizing: border-box; }
+
 body {
   margin: 0;
   background: #000;
   color: #fff;
-  font-family: Arial, sans-serif;
-  height: 100vh;
+  font-family: system-ui;
+  min-height: 100svh;
   display: flex;
   flex-direction: column;
 }
 
-/* HEADER */
+/* Header */
 .header {
+  padding: 14px;
+  background: #0f0f0f;
+  border-bottom: 1px solid #222;
   display: flex;
   align-items: center;
-  padding: 12px;
-  background: #111;
-  border-bottom: 1px solid #222;
-}
-.back {
-  font-size: 20px;
-  margin-right: 12px;
-  cursor: pointer;
-}
-.title {
-  flex: 1;
-}
-.reset {
-  font-size: 13px;
-  color: #aaa;
-  cursor: pointer;
+  gap: 10px;
 }
 
-/* CHAT */
-.chat {
+.header button {
+  background: none;
+  border: none;
+  color: #2f80ed;
+  font-size: 16px;
+}
+
+/* Content */
+.content {
   flex: 1;
-  padding: 15px;
   overflow-y: auto;
+  padding: 16px;
 }
 
-.msg {
-  max-width: 85%;
-  padding: 10px 14px;
-  margin-bottom: 10px;
-  border-radius: 12px;
-  background: #1e1e1e;
-}
-
-/* STATUS TEXT (LOG) */
-.status {
-  font-size: 13px;
-  color: #aaa;
-  margin: 6px 0 0 6px;
-  font-style: italic;
-}
-
-/* FILE LIST */
+/* File list */
 .file {
-  background: #111;
-  border: 1px solid #222;
-  padding: 12px;
-  border-radius: 10px;
-  margin-bottom: 10px;
-  cursor: pointer;
-}
-.file.active {
-  background: #2f80ed;
-  border-color: #2f80ed;
-}
-.file small {
-  color: #aaa;
-}
-.file.active small {
-  color: #e6e6e6;
+  padding: 14px;
+  background: #1c1c1c;
+  border-radius: 14px;
+  margin-bottom: 12px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- HEADER -->
 <div class="header">
-  <div class="back" onclick="goBack()">←</div>
-  <div class="title">file</div>
-  <div class="reset" onclick="resetAll()">Reset</div>
+  <button onclick="history.back()">← Kembali</button>
+  <div>Senarai Fail</div>
 </div>
 
-<!-- CHAT -->
-<div class="chat" id="chat"></div>
-
-<script>
-const chat = document.getElementById("chat");
-
-/* BOT MESSAGE */
-function bot(text) {
-  const d = document.createElement("div");
-  d.className = "msg";
-  d.innerText = text;
-  chat.appendChild(d);
-}
-
-/* STATUS LOG (TAK PADAM YANG LAMA) */
-function status(text) {
-  const s = document.createElement("div");
-  s.className = "status";
-  s.innerText = `*${text}*`;
-  chat.appendChild(s);
-  chat.scrollTop = chat.scrollHeight;
-}
-
-/* FILE ITEM */
-function fileItem(name, desc, link) {
-  const d = document.createElement("div");
-  d.className = "file";
-  d.innerHTML = `<b> ${V.G.K}</b><br><small>${desc}</small>`;
-  d.onclick = () => openFile(d, name, link);
-  chat.appendChild(d);
-}
-
-function openFile(el, name, link) {
-  el.classList.add("active");
-  status(`${name} dibuka`);
-  window.open(link, "_blank"); // buka link luar
-}
-
-/* RESET */
-function resetAll() {
-  document.querySelectorAll(".file").forEach(f => f.classList.remove("active"));
-  document.querySelectorAll(".status").forEach(s => s.remove());
-  bot("Semua pilihan telah direset.");
-}
-
-function goBack() {
-  window.location.href = "index.html";
-}
-
-/* INIT */
-bot("Pilih fail di bawah. Setiap fail akan membuka pautan luar.");
-
-fileItem("File A", "Maklumat asas", "https://www.google.com");
-fileItem("File B", "Dokumen rahsia", "https://www.youtube.com");
-fileItem("File C", "Akses khas", "https://example.com");
-</script>
+<div class="content">
+  <div class="file">📄 File 1</div>
+  <div class="file">📄 File 2</div>
+  <div class="file">📄 File 3</div>
+  <div class="file">📄 File 4</div>
+</div>
 
 </body>
 </html>
