@@ -129,7 +129,7 @@ function addMsg(text, cls) {
 }
 
 // Initial bot message
-addMsg("Masukkan code akses 4 digit.", "bot");
+addMsg("Selamat Datang! Sila Masukkan Kod Untuk Mendapatkan Kandungan. KOD 4 DIGIT.", "bot");
 
 function send() {
   const input = document.getElementById("code");
@@ -141,12 +141,12 @@ function send() {
   input.value = "";
 
   if (accessMap[value]) {
-    addMsg("✅ Akses diterima. Mengalihkan…", "bot");
+    addMsg("Akses diterima. Mengalihkan…", "bot");
     setTimeout(() => {
       location.href = accessMap[value];
     }, 1000);
   } else {
-    addMsg("❌ Code tidak sah.", "bot");
+    addMsg("Code tidak sah... Cuba Lagi.", "bot");
   }
 }
 
