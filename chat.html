@@ -3,138 +3,140 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Chat Access</title>
+<title>Senarai Ka - File A</title>
 
 <style>
 * { box-sizing: border-box; }
-body { margin: 0; background: #000; color: #fff; font-family: system-ui, -apple-system, sans-serif; height: 100vh; display: flex; flex-direction: column; }
+body { margin: 0; background: #000; color: #fff; font-family: system-ui, -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; }
 
-.chat { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+/* Header Style */
+.header { width: 100%; max-width: 450px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+.btn-top { background: #1c1c1e; color: #eee; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: bold; }
 
-/* Bubble Chat dengan Ekor (Tail) */
-.msg { 
-    max-width: 85%; 
-    padding: 12px 16px; 
-    border-radius: 18px; 
-    font-size: 15px; 
-    position: relative; 
-    line-height: 1.4;
+.container { width: 100%; max-width: 450px; }
+
+/* Kotak Nipis Style */
+.kotak { 
+    background: #1c1c1e; border-radius: 12px; padding: 10px 16px; margin-bottom: 10px; 
+    display: flex; justify-content: space-between; align-items: center; border: 1px solid #2c2c2e; position: relative;
 }
 
-/* Bot Style (Kelabu Gelap) */
-.bot { 
-    background: #1c1c1e; 
-    align-self: flex-start; 
-    border-bottom-left-radius: 4px; 
+/* Warna Biru bila dah klik */
+.kotak.dah-buka { background: #001a33; border-color: #007aff; }
+
+.teks-utama { font-size: 14px; font-weight: 500; color: #fff; margin-bottom: 4px; }
+
+/* Button Info Gaya Link */
+.btn-info-link { background: none; border: none; color: #555; font-size: 11px; cursor: pointer; padding: 0; text-decoration: underline; }
+
+.action-area { display: flex; align-items: center; gap: 12px; }
+
+.btn-buka { 
+    background: #ff3b30; color: #fff; border: none; padding: 6px 14px; 
+    border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 12px; text-decoration: none;
 }
 
-/* User Style (Biru) */
-.user { 
-    background: #007aff; 
-    align-self: flex-end; 
-    border-bottom-right-radius: 4px; 
-}
+/* Butang Delete (X) */
+.btn-delete { background: none; border: none; color: #444; font-size: 18px; cursor: pointer; padding: 5px; line-height: 1; }
+.btn-delete:hover { color: #ff3b30; }
 
-/* Gaya Kotak Info di dalam Chat */
-.info-inside {
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid #333;
-}
-.info-inside p { margin: 5px 0; font-size: 13px; color: #aaa; }
-.info-row { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
-.btn-info { 
-    background: #444; color: #fff; border: none; padding: 5px 12px; 
-    border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 11px;
-}
-.info-label { font-size: 11px; color: #666; }
-
-/* Input area */
-.input-box { position: sticky; bottom: 0; display: flex; gap: 10px; padding: 12px; background: #000; border-top: 1px solid #222; }
-input { flex: 1; padding: 14px; background: #1c1c1e; border: none; color: #fff; border-radius: 999px; outline: none; font-size: 16px; text-align: center; letter-spacing: 4px; }
-button { background: #007aff; border: none; color: #fff; padding: 0 18px; border-radius: 50%; font-size: 18px; cursor: pointer; width: 45px; height: 45px; }
+/* Popup (Modal) Style */
+.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; }
+.modal-content { background: #1c1c1e; padding: 20px; border-radius: 15px; width: 85%; max-width: 320px; text-align: center; border: 1px solid #333; }
+.modal-content h3 { margin: 0 0 10px 0; font-size: 16px; color: #007aff; }
+.modal-content p { font-size: 13px; color: #bbb; line-height: 1.5; margin-bottom: 20px; }
+.btn-close { background: #444; color: #fff; border: none; padding: 8px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
 </style>
 </head>
 
 <body>
 
-<div class="chat" id="chat">
+<div class="header">
+    <button class="btn-top" onclick="window.location.href='file.html'">BACK</button>
+    <h4 style="margin: 0; letter-spacing: 2px; font-size: 14px;">SENARAI KA</h4>
+    <button class="btn-top" onclick="resetSemua()">RESET</button>
+</div>
+
+<div class="container" id="listArea">
     </div>
 
-<div class="input-box">
-  <input id="code" type="tel" inputmode="numeric" maxlength="4" placeholder="••••" autofocus>
-  <button onclick="send()">➤</button>
+<div id="myModal" class="modal">
+    <div class="modal-content">
+        <h3 id="popTitle">INFO</h3>
+        <p id="popText">Teks maklumat akan muncul di sini.</p>
+        <button class="btn-close" onclick="closePopup()">TUTUP</button>
+    </div>
 </div>
 
 <script>
-const accessMap = {
-  "1234": "file.html",
-  "5678": "page-b.html",
-  "9999": "admin.html"
-};
+// Data List (Ka boleh tambah/tukar secara manual kat sini)
+let dataKa = JSON.parse(localStorage.getItem('list_data_ka')) || [
+    { id: "L1", tajuk: "Koleksi Video 01", url: "https://google.com", detail: "Video ini memerlukan aplikasi MEGA untuk dimainkan dengan lancar." },
+    { id: "L2", tajuk: "Koleksi Video 02", url: "https://youtube.com", detail: "Pastikan sambungan internet stabil. Resolusi 1080p tersedia." },
+    { id: "L3", tajuk: "Koleksi Gambar 03", url: "https://facebook.com", detail: "Gambar arkib sulit tahun 2024. Sila simpan untuk rujukan." },
+    { id: "L4", tajuk: "Secret Link 04",    url: "https://tiktok.com",   detail: "Pautan ini akan tamat tempoh dalam masa 24 jam." }
+];
 
-const chat = document.getElementById("chat");
+const listArea = document.getElementById("listArea");
 
-// Function utama untuk tambah mesej (Bot/User)
-function addMsg(text, cls, hasInfo = false) {
-    const div = document.createElement("div");
-    div.className = "msg " + cls;
-    
-    let content = `<div>${text}</div>`;
-    
-    // Kalau ada info (untuk mesej pertama), kita masukkan sekali dalam bubble
-    if (hasInfo) {
-        content += `
-            <div class="info-inside">
-                <p>Tidak tahu cara untuk mainkan video?</p>
-                <p>Tidak tahu di mana file akan disediakan?</p>
-                <div class="info-row">
-                    <button class="btn-info" onclick="alert('+ Tekan Mana-mana butang untuk mainkan video. + File hanya disediakan di MEGA (Tersedia di PlayStore) ')">INFO</button>
-                    <span class="info-label">Tekan ini untuk maklumat</span>
-                </div>
+function render() {
+    listArea.innerHTML = "";
+    const clickedStatus = JSON.parse(localStorage.getItem('sudah_klik')) || {};
+
+    dataKa.forEach((item, index) => {
+        const isBlue = clickedStatus[item.id];
+        const div = document.createElement("div");
+        div.className = `kotak ${isBlue ? 'dah-buka' : ''}`;
+        
+        div.innerHTML = `
+            <div>
+                <div class="teks-utama">${item.tajuk}</div>
+                <button class="btn-info-link" onclick="openPopup('${item.tajuk}', '${item.detail}')">INFO | DETAIL | LINK</button>
+            </div>
+            <div class="action-area">
+                <a href="${item.url}" target="_blank" class="btn-buka" onclick="markClick('${item.id}')">BUKA</a>
+                <button class="btn-delete" onclick="deleteItem(${index})">×</button>
             </div>
         `;
-    }
-    
-    div.innerHTML = content;
-    chat.appendChild(div);
-    chat.scrollTop = chat.scrollHeight;
-    saveChat();
+        listArea.appendChild(div);
+    });
 }
 
-function send() {
-    const input = document.getElementById("code");
-    const value = input.value.trim();
-
-    if (value.length !== 4) return;
-
-    addMsg("••••", "user");
-    input.value = "";
-
-    setTimeout(() => {
-        if (accessMap[value]) {
-            addMsg("Akses diterima. Mengalihkan ke kandungan...", "bot");
-            setTimeout(() => { location.href = accessMap[value]; }, 1000);
-        } else {
-            addMsg("Kod tidak sah... Sila cuba lagi.", "bot");
-        }
-    }, 500);
+function markClick(id) {
+    let clickedStatus = JSON.parse(localStorage.getItem('sudah_klik')) || {};
+    clickedStatus[id] = true;
+    localStorage.setItem('sudah_klik', JSON.stringify(clickedStatus));
+    setTimeout(render, 500);
 }
 
-function saveChat() {
-    localStorage.setItem("chat_history", chat.innerHTML);
-}
-
-// Bila buka page:
-window.onload = () => {
-    const saved = localStorage.getItem("chat_history");
-    if (saved) {
-        chat.innerHTML = saved;
-    } else {
-        // Mesej pertama kali buka (Mesej Bot + Info Box)
-        addMsg("Selamat Datang! Sila Masukkan Kod Untuk Mendapatkan Kandungan. KOD 4 DIGIT.", "bot", true);
+function deleteItem(index) {
+    if(confirm("Hapus list ni, Ka?")) {
+        dataKa.splice(index, 1);
+        localStorage.setItem('list_data_ka', JSON.stringify(dataKa));
+        render();
     }
 }
+
+function openPopup(title, text) {
+    document.getElementById("popTitle").innerText = title;
+    document.getElementById("popText").innerText = text;
+    document.getElementById("myModal").style.display = "flex";
+}
+
+function closePopup() {
+    document.getElementById("myModal").style.display = "none";
+}
+
+function resetSemua() {
+    if(confirm("Reset semua jadi asal balik?")) {
+        localStorage.removeItem('sudah_klik');
+        localStorage.removeItem('list_data_ka');
+        location.reload();
+    }
+}
+
+// Start!
+window.onload = render;
 </script>
 
 </body>
