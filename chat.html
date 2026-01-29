@@ -44,7 +44,7 @@ input { flex: 1; padding: 14px; background: #1c1c1e; border: none; color: #fff; 
 <div id="infoModal" class="modal">
     <div class="modal-content">
         <h3 style="margin-top:0">Maklumat Akses</h3>
-        <p>+ Tekan mana-mana butang untuk mainkan video.<br>+ File hanya disediakan di MEGA (Tersedia di PlayStore).</p>
+        <p>+ Tekan tombol Masuk untuk mendapatkan link Video.<br>+ File hanya disediakan di MEGA (Tersedia di PlayStore).</p>
         <button class="btn-close" onclick="closePopup()">FAHAM</button>
     </div>
 </div>
@@ -107,7 +107,7 @@ function send() {
 function saveChat() { localStorage.setItem("chat_history", chat.innerHTML); }
 
 function clearHistory() {
-    if(confirm("Nak padam semua sejarah chat ke Ka?")) {
+    if(confirm("Adakan kamu akan meneruskan?")) {
         localStorage.removeItem("chat_history");
         chat.innerHTML = "";
         addMsg("Selamat Datang! Sila Masukkan Kod Untuk Mendapatkan Kandungan. KOD 4 DIGIT.", "bot", true);
