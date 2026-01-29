@@ -77,10 +77,11 @@
 <body>
 
     <div class="header">
-        <button class="btn-top">BACK</button>
-        <h4 style="margin: 0; letter-spacing: 1px;">SENARAI KA</h4>
-        <button class="btn-top" onclick="resetMemori()">RESET</button>
-    </div>
+    <button class="btn-top" onclick="history.length > 1 ? history.back() : window.location.href='index.html'">BACK</button>
+    <h4 style="margin: 0; letter-spacing: 1px;">SENARAI KA</h4>
+    <button class="btn-top" onclick="resetMemori()">RESET</button>
+</div>
+
 
     <div class="container" id="mainContainer"></div>
 
