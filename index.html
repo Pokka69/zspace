@@ -3,116 +3,133 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Access Gate</title>
+<title>Ka-Tok | Login</title>
 
 <style>
+*{margin:0;padding:0;box-sizing:border-box;}
 body{
-  margin:0;
-  background:#000;
-  color:#fff;
-  font-family:system-ui;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  height:100vh;
+    background:linear-gradient(145deg,#0d1117,#0a0d12);
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-family:Arial, sans-serif;
+    color:#fff;
 }
-.box{
-  width:260px;
-  text-align:center;
+
+.card{
+    background:#121826;
+    width:90%;
+    max-width:380px;
+    padding:28px;
+    border-radius:18px;
+    box-shadow:0 0 30px rgba(0,0,0,.7);
 }
-input,button{
-  width:100%;
-  padding:14px;
-  border:none;
-  border-radius:14px;
-  font-size:16px;
+
+h2{
+    text-align:center;
+    margin-bottom:25px;
+    font-weight:500;
 }
-input{
-  background:#111;
-  color:#fff;
-  text-align:center;
-  letter-spacing:6px;
-  margin-bottom:12px;
+
+.input-box{
+    background:#1a2132;
+    border-radius:10px;
+    display:flex;
+    align-items:center;
+    padding:12px;
+    margin-bottom:15px;
 }
+
+.input-box span{
+    opacity:.6;
+    margin-right:8px;
+}
+
+.input-box input{
+    width:100%;
+    background:transparent;
+    border:none;
+    outline:none;
+    color:#fff;
+    font-size:16px;
+}
+
 button{
-  background:#2f80ed;
-  color:#fff;
+    width:100%;
+    background:#21c17a;
+    border:none;
+    padding:12px;
+    font-size:16px;
+    border-radius:10px;
+    color:#000;
+    font-weight:bold;
 }
-.msg{
-  margin-top:10px;
-  font-size:14px;
+
+.status{
+    text-align:center;
+    margin-top:15px;
+    font-size:13px;
+    color:#aaa;
 }
 </style>
 </head>
 
 <body>
 
-<div class="box">
-  <input id="code" type="tel" inputmode="numeric" maxlength="4" placeholder="••••">
-  <button onclick="unlock()">ENTER</button>
-  <div class="msg" id="msg"></div>
+<div class="card">
+    <h2>User Login</h2>
+
+    <div class="input-box">
+        <span>👤</span>
+        <input id="username" placeholder="User name">
+    </div>
+
+    <button onclick="login()">LOGIN</button>
+
+    <div class="status" id="status"></div>
 </div>
 
 <script>
-// ===============================
-// SENARAI HASH SAH (SHA-256 4 digit)
-// ===============================
-const VALID_HASHES = [
-  // 1234
-  "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
-  // 5678
-  "f8638b979b2f4f793ddb6dbd197e0ee25a7a6ea32b79a93f6f6e3fbb9c7b8c1d",
-  // 9999
-  "888df25ae35772424a560c7152a1de794440e0ea5cfee62828333a456a506e05"
-];
-
-// AUTO LOGIN JIKA PERNAH LULUS
-if (localStorage.getItem("permanent_access") === "yes") {
-  location.replace("chat.html");
+if(localStorage.getItem("login")==="true"){
+    window.location.href="homepage.html";
 }
 
-async function unlock(){
-  const input = document.getElementById("code");
-  const msg = document.getElementById("msg");
-  const val = input.value.trim();
+function login(){
+    let user=document.getElementById("username").value.trim();
+    let status=document.getElementById("status");
 
-  if(val.length !== 4){
-    msg.textContent = "Masukkan 4 digit";
-    return;
-  }
+    if(!user.startsWith("@")){
+        status.innerHTML="Username mesti bermula dengan @";
+        return;
+    }
 
-  const hash = await sha256(val);
+    if(user==="@admin69"){
+        localStorage.setItem("login","true");
+        localStorage.setItem("user",user);
+        window.location.href="homepage.html";
+        return;
+    }
 
-  if(!VALID_HASHES.includes(hash)){
-    msg.textContent = "❌ Kod tidak sah";
-    return;
-  }
+    let users=JSON.parse(localStorage.getItem("users")||"{}");
 
-  let used = JSON.parse(localStorage.getItem("used_hashes") || "[]");
-  if(used.includes(hash)){
-    msg.textContent = "⚠️ Kod telah digunakan";
-    return;
-  }
+    if(!users[user]){
+        users[user]="pending";
+        localStorage.setItem("users",JSON.stringify(users));
+        status.innerHTML="Permintaan dihantar. Tunggu admin luluskan.";
+        return;
+    }
 
-  // tandakan digunakan
-  used.push(hash);
-  localStorage.setItem("used_hashes", JSON.stringify(used));
+    if(users[user]==="pending"){
+        status.innerHTML="Menunggu kelulusan admin...";
+        return;
+    }
 
-  // akses kekal
-  localStorage.setItem("permanent_access","yes");
-
-  msg.textContent = "✅ Akses diterima";
-  setTimeout(()=>location.href="chat.html",700);
-}
-
-async function sha256(text){
-  const buf = await crypto.subtle.digest(
-    "SHA-256",
-    new TextEncoder().encode(text)
-  );
-  return [...new Uint8Array(buf)]
-    .map(b=>b.toString(16).padStart(2,"0"))
-    .join("");
+    if(users[user]==="approved"){
+        localStorage.setItem("login","true");
+        localStorage.setItem("user",user);
+        window.location.href="homepage.html";
+    }
 }
 </script>
 
