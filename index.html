@@ -1,137 +1,89 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ka-Tok | Login</title>
-
-<style>
-*{margin:0;padding:0;box-sizing:border-box;}
-body{
-    background:linear-gradient(145deg,#0d1117,#0a0d12);
-    height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    font-family:Arial, sans-serif;
-    color:#fff;
-}
-
-.card{
-    background:#121826;
-    width:90%;
-    max-width:380px;
-    padding:28px;
-    border-radius:18px;
-    box-shadow:0 0 30px rgba(0,0,0,.7);
-}
-
-h2{
-    text-align:center;
-    margin-bottom:25px;
-    font-weight:500;
-}
-
-.input-box{
-    background:#1a2132;
-    border-radius:10px;
-    display:flex;
-    align-items:center;
-    padding:12px;
-    margin-bottom:15px;
-}
-
-.input-box span{
-    opacity:.6;
-    margin-right:8px;
-}
-
-.input-box input{
-    width:100%;
-    background:transparent;
-    border:none;
-    outline:none;
-    color:#fff;
-    font-size:16px;
-}
-
-button{
-    width:100%;
-    background:#21c17a;
-    border:none;
-    padding:12px;
-    font-size:16px;
-    border-radius:10px;
-    color:#000;
-    font-weight:bold;
-}
-
-.status{
-    text-align:center;
-    margin-top:15px;
-    font-size:13px;
-    color:#aaa;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GBoxsites - Login</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: #000; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; color: white; }
+        .card { background-color: #333; width: 340px; padding: 35px 25px; border-radius: 35px; text-align: center; border: 1px solid #444; }
+        .blue { color: #569cd6; }
+        .input-box { width: 100%; background-color: #444; border: none; border-radius: 12px; padding: 14px; color: white; text-align: center; margin-bottom: 15px; outline: none; }
+        .btn-group { display: flex; gap: 10px; }
+        .btn { flex: 1; padding: 12px; border-radius: 12px; border: none; font-weight: bold; background: linear-gradient(to bottom, #eee, #aaa); cursor: pointer; color: black; text-decoration: none; display: flex; align-items: center; justify-content: center; }
+        #waitingText { color: #569cd6; font-weight: bold; font-size: 11px; margin-top: 20px; display: none; }
+    </style>
 </head>
-
 <body>
-
-<div class="card">
-    <h2>User Login</h2>
-
-    <div class="input-box">
-        <span>👤</span>
-        <input id="username" placeholder="User name">
+    <div style="text-align:center; margin-bottom: 40px;">
+        <h2>Hi, Selamat Datang</h2>
+        <h1 style="font-style:italic;">GBox<span class="blue" style="font-style:normal;">sites</span></h1>
+    </div>
+    <div class="card">
+        <h3 style="font-family:cursive; font-size:30px; margin-bottom:10px;">Selamat Datang!</h3>
+        <p style="font-size:11px; color:#ccc; margin-bottom:20px;">Sila Masukkan username kamu di kotak<br>yang disediakan<br><span class="blue">Contoh : @username001</span></p>
+        <input type="text" id="usernameInput" class="input-box" placeholder="@username001">
+        <div class="btn-group">
+            <button class="btn" onclick="handleLogin()">Login</button>
+            <a href="#" class="btn">Beli</a>
+        </div>
+        <div id="waitingText">**Menunggu Kebenaran Admin**</div>
     </div>
 
-    <button onclick="login()">LOGIN</button>
+    <script>
+        setInterval(checkStatus, 2000);
 
-    <div class="status" id="status"></div>
-</div>
+        function generateID() {
+            const now = new Date();
+            const dd = String(now.getDate()).padStart(2, '0');
+            const mm = String(now.getMonth() + 1).padStart(2, '0');
+            const yyyy = String(now.getFullYear());
+            const datePrefix = dd + mm + yyyy; // Contoh: 26032026
 
-<script>
-if(localStorage.getItem("login")==="true"){
-    window.location.href="homepage.html";
-}
+            let db = JSON.parse(localStorage.getItem('gbox_db')) || [];
+            
+            // Cari pendaftaran yang bermula dengan tarikh hari ini
+            const todayRegistrations = db.filter(u => u.id && u.id.startsWith(datePrefix));
+            
+            // Tentukan nombor giliran (GGG)
+            let nextSequence = todayRegistrations.length + 1;
+            const ggg = String(nextSequence).padStart(3, '0');
 
-function login(){
-    let user=document.getElementById("username").value.trim();
-    let status=document.getElementById("status");
+            return datePrefix + ggg; // Hasil: 26032026001
+        }
 
-    if(!user.startsWith("@")){
-        status.innerHTML="Username mesti bermula dengan @";
-        return;
-    }
+        function handleLogin() {
+            const val = document.getElementById('usernameInput').value.trim().toLowerCase();
+            if (!val.startsWith('@') || val.includes('admin')) return alert("Username tidak sah!");
+            
+            localStorage.setItem('currentUser', val);
+            let db = JSON.parse(localStorage.getItem('gbox_db')) || [];
+            
+            if (!db.find(u => u.name === val)) {
+                const newID = generateID();
+                db.push({ 
+                    name: val, 
+                    status: 'pending', 
+                    id: newID 
+                });
+                localStorage.setItem('gbox_db', JSON.stringify(db));
+            }
+            checkStatus();
+        }
 
-    if(user==="@admin69"){
-        localStorage.setItem("login","true");
-        localStorage.setItem("user",user);
-        window.location.href="homepage.html";
-        return;
-    }
-
-    let users=JSON.parse(localStorage.getItem("users")||"{}");
-
-    if(!users[user]){
-        users[user]="pending";
-        localStorage.setItem("users",JSON.stringify(users));
-        status.innerHTML="Permintaan dihantar. Tunggu admin luluskan.";
-        return;
-    }
-
-    if(users[user]==="pending"){
-        status.innerHTML="Menunggu kelulusan admin...";
-        return;
-    }
-
-    if(users[user]==="approved"){
-        localStorage.setItem("login","true");
-        localStorage.setItem("user",user);
-        window.location.href="homepage.html";
-    }
-}
-</script>
-
+        function checkStatus() {
+            const user = localStorage.getItem('currentUser');
+            if (!user) return;
+            if (user === "@admin" || user === "@haikal") { window.location.href = "adminmode.html"; return; }
+            let db = JSON.parse(localStorage.getItem('gbox_db')) || [];
+            let found = db.find(u => u.name === user);
+            if (found && found.status === 'active') { 
+                window.location.href = "homepage.html"; 
+            } else if (found) { 
+                document.getElementById('waitingText').style.display = 'block'; 
+            }
+        }
+    </script>
 </body>
 </html>
